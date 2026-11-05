@@ -1,0 +1,26 @@
+identity:
+  id: daily_diary
+  version: '1.0'
+output:
+  width: 1080
+  height: 1920
+  fps: 30
+timing:
+  photo_max_seconds: 5.5
+  hook_max_seconds: 3.0
+  ending_max_seconds: 4.0
+visual:
+  photo_motion: slow_push_in
+  video_motion: original
+  fit: contain
+  transition: cut
+audio:
+  preserve_original: true
+  normalize: true
+  narration: disabled_without_grounding
+story:
+  sequence: [hook, moment, ending]
+  chronology: selected_source_order
+  invented_dates: false
+  invented_emotions: false
+  invented_actions: false

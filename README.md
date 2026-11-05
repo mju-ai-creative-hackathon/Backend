@@ -1,5 +1,7 @@
 # Hackathon Backend
 
+임시 일상 기록형 편집 계획·로컬 영상 제작: [DIARY_VIDEO.md](docs/DIARY_VIDEO.md)
+
 커뮤니티 게시물·검색·랜덤 탐색 API: [COMMUNITY_API.md](docs/COMMUNITY_API.md)
 
 숏폼 제작 중계 API 및 AI 연동 가안: [SHORTFORM_API.md](docs/SHORTFORM_API.md)

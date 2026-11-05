@@ -16,6 +16,8 @@ public class RenderJob {
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 20) VideoStyle style;
     @Enumerated(EnumType.STRING) @Column(nullable = false, length = 20) VideoMood mood;
     @Column(length = 100) String musicId;
+    Integer targetDurationSec;
+    @Column(length = 10) String renderProvider;
     @ElementCollection
     @CollectionTable(name = "shortform_render_sources", joinColumns = @JoinColumn(name = "render_job_id"))
     @OrderColumn(name = "source_order")
@@ -36,12 +38,15 @@ public class RenderJob {
     RenderJob(UUID projectId, UUID key, ShortformDtos.RenderRequest request) {
         this.projectId = projectId; this.idempotencyKey = key;
         this.style = request.style(); this.mood = request.mood(); this.musicId = request.musicId();
+        this.targetDurationSec = request.effectiveTargetDuration();
         this.assetIds = new ArrayList<>(request.assetIds()); this.status = RenderStatus.QUEUED;
         this.createdAt = Instant.now(); this.updatedAt = createdAt; this.nextAttemptAt = createdAt;
     }
     boolean sameRequest(ShortformDtos.RenderRequest request) {
         return style == request.style() && mood == request.mood() && Objects.equals(musicId, request.musicId())
-                && assetIds.equals(request.assetIds());
+                && assetIds.equals(request.assetIds())
+                && (targetDurationSec == null ? 35 : targetDurationSec) == request.effectiveTargetDuration()
+                && (request.renderProvider() == null || request.renderProvider().equals(renderProvider == null ? "remote" : renderProvider));
     }
     void fail(String code, String message) {
         status = RenderStatus.FAILED; errorCode = code; errorMessage = message;

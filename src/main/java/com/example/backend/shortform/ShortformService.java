@@ -7,6 +7,7 @@ import com.example.backend.shortform.storage.MediaStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class ShortformService {
     private final AuthService auth;
     private final MediaStorage storage;
     private final AiRenderClient ai;
+    @Value("${app.shortform.render-provider:remote}") private String defaultProvider = "remote";
 
     public ShortformService(ShortformProjectRepository projects, ShortformAssetRepository assets,
                             RenderJobRepository jobs, AuthService auth, MediaStorage storage, AiRenderClient ai) {
@@ -37,7 +39,8 @@ public class ShortformService {
     public Options options() {
         return new Options(Arrays.stream(VideoStyle.values()).map(v -> new Option(v.name(), v.label())).toList(),
                 Arrays.stream(VideoMood.values()).map(v -> new Option(v.name(), v.label())).toList(),
-                5, 20, 10L * 1024 * 1024, 100L * 1024 * 1024, ai.isConfigured());
+                5, 20, 10L * 1024 * 1024, 100L * 1024 * 1024, ai.isConfigured(),
+                java.util.stream.Stream.of("remote", "local").filter(ai::isConfigured).toList());
     }
 
     @Transactional
@@ -109,14 +112,18 @@ public class ShortformService {
             if (!previous.get().sameRequest(request)) throw conflict("같은 요청 키로 다른 제작 옵션을 보낼 수 없습니다.");
             return RenderView.from(previous.get());
         }
-        if (!ai.isConfigured()) throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, "AI_NOT_CONFIGURED", "영상 제작 서버가 아직 연결되지 않았습니다.");
+        String provider = request.renderProvider() == null ? defaultProvider : request.renderProvider();
+        if (!ai.isConfigured(provider)) throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, "AI_NOT_CONFIGURED", "선택한 영상 제작기가 준비되지 않았습니다.");
+        if (provider.equals("local") && request.musicId() != null) throw ApiException.badRequest("로컬 제작의 배경 음악은 아직 지원하지 않습니다.");
         if (jobs.existsByProjectIdAndStatusIn(id, ACTIVE)) throw conflict("이미 영상 제작이 진행 중입니다.");
         if (request.assetIds() == null || request.assetIds().size() < 5 || request.assetIds().size() > 20
                 || new HashSet<>(request.assetIds()).size() != request.assetIds().size())
             throw ApiException.badRequest("중복 없이 촬영 소스를 5~20개 선택해주세요.");
         var allowed = new HashSet<>(assets.findByProjectIdOrderByPositionAsc(id).stream().map(a -> a.id).toList());
         if (!allowed.containsAll(request.assetIds())) throw ApiException.badRequest("이 프로젝트에 등록된 촬영 소스만 사용할 수 있습니다.");
-        return RenderView.from(jobs.save(new RenderJob(id, key, request)));
+        var job = new RenderJob(id, key, request);
+        job.renderProvider = provider;
+        return RenderView.from(jobs.save(job));
     }
 
     public RenderView getRender(String authorization, UUID id, UUID renderId) {

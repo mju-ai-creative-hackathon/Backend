@@ -55,6 +55,10 @@ public class RenderStateService {
         return jobs.findTop20ByStatusInAndNextAttemptAtLessThanEqualOrderByCreatedAtAsc(ShortformService.ACTIVE, Instant.now())
                 .stream().map(j -> j.id).toList();
     }
+    @Transactional(readOnly = true)
+    public String provider(UUID id) {
+        return jobs.findById(id).map(j -> j.renderProvider == null ? "remote" : j.renderProvider).orElse("remote");
+    }
 
     @Transactional
     public Claim claim(UUID id) {
@@ -82,11 +86,14 @@ public class RenderStateService {
             job.fail("SOURCE_MISSING", "제작에 필요한 원본을 읽을 수 없습니다."); return null;
         }
         job.leaseToken = UUID.randomUUID();
-        job.nextAttemptAt = now.plusSeconds(120);
+        job.nextAttemptAt = now.plusSeconds("local".equals(job.renderProvider) ? 600 : 120);
         job.updatedAt = now;
         if (job.externalJobId == null) job.status = RenderStatus.SUBMITTING;
         return new Claim(job.id, job.leaseToken, job.externalJobId, new AiRenderClient.RenderSubmission(
-                job.id, job.projectId, job.style.name(), job.mood.name(), job.musicId, List.copyOf(sources)));
+                job.id, job.projectId, job.style.name(), job.mood.name(), job.musicId, List.copyOf(sources))
+                .withTargetDuration(job.targetDurationSec == null ? 35 : job.targetDurationSec)
+                .withProjectTitle(projects == null ? null : projects.findById(job.projectId).map(p -> p.title).orElse(null))
+                .withRenderProvider(job.renderProvider == null ? "remote" : job.renderProvider));
     }
 
     /**
@@ -108,7 +115,7 @@ public class RenderStateService {
         }
         if (resolved.isEmpty()) return submission;
         return new AiRenderClient.RenderSubmission(submission.jobId(), submission.projectId(), submission.style(),
-                submission.mood(), submission.musicId(), submission.sources(), resolved);
+                submission.mood(), submission.musicId(), submission.sources(), resolved, submission.editPlan(), submission.targetDurationSec(), submission.projectTitle(), submission.renderProvider());
     }
 
     @Transactional

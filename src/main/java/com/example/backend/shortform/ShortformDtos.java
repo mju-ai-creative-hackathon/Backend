@@ -13,10 +13,20 @@ public final class ShortformDtos {
     }
     public record RenderRequest(@NotNull VideoStyle style, @NotNull VideoMood mood,
                                 @Pattern(regexp = "[A-Za-z0-9_-]{1,100}") String musicId,
-                                @NotNull @Size(min = 5, max = 20) List<@NotNull UUID> assetIds) {}
+                                @NotNull @Size(min = 5, max = 20) List<@NotNull UUID> assetIds,
+                                @Min(15) @Max(90) Integer targetDurationSec,
+                                @Pattern(regexp = "remote|local") String renderProvider) {
+        public RenderRequest(VideoStyle style, VideoMood mood, String musicId, List<UUID> assetIds) {
+            this(style, mood, musicId, assetIds, null, null);
+        }
+        public RenderRequest(VideoStyle style, VideoMood mood, String musicId, List<UUID> assetIds, Integer targetDurationSec) {
+            this(style, mood, musicId, assetIds, targetDurationSec, null);
+        }
+        public int effectiveTargetDuration() { return targetDurationSec == null ? 35 : targetDurationSec; }
+    }
     public record Option(String code, String label) {}
     public record Options(List<Option> styles, List<Option> moods, int minAssets, int maxAssets,
-                          long maxImageBytes, long maxVideoBytes, boolean renderingAvailable) {}
+                          long maxImageBytes, long maxVideoBytes, boolean renderingAvailable, List<String> renderProviders) {}
     public record AssetView(UUID id, String originalFilename, String contentType, long sizeBytes,
                             MediaKind kind, UUID missionId, String contentUrl) {
         static AssetView from(ShortformAsset asset) {

@@ -1,6 +1,7 @@
 package com.example.backend.shortform.ai;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.example.backend.shortform.edit.EditPlan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
@@ -85,7 +86,7 @@ public class HttpAiRenderClient implements AiRenderClient {
                             source.contentType(), safeFilename(source)))
                     .toList();
             var manifest = new Manifest(submission.jobId(), submission.projectId(), submission.style(),
-                    submission.mood(), submission.musicId(), sourceMetadata, submission.shootingHints());
+                    submission.mood(), submission.musicId(), sourceMetadata, submission.shootingHints(), submission.editPlan());
             var parts = new ArrayList<HttpRequest.BodyPublisher>();
             parts.add(text("--" + boundary + "\r\nContent-Disposition: form-data; name=\"manifest\"\r\n"
                     + "Content-Type: application/json\r\n\r\n"));
@@ -252,7 +253,8 @@ public class HttpAiRenderClient implements AiRenderClient {
 
     private record Manifest(UUID jobId, UUID projectId, String style, String mood, String musicId,
                             List<ManifestSource> sources,
-                            @JsonInclude(JsonInclude.Include.NON_EMPTY) List<ShootingHint> shootingHints) {}
+                            @JsonInclude(JsonInclude.Include.NON_EMPTY) List<ShootingHint> shootingHints,
+                            @JsonInclude(JsonInclude.Include.NON_NULL) EditPlan editPlan) {}
     private record ManifestSource(UUID assetId, UUID missionId, int position, String contentType, String filename) {}
 
     private static final class LimitedBodySubscriber implements HttpResponse.BodySubscriber<byte[]> {

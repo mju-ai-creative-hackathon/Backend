@@ -1,5 +1,7 @@
 # CI에서 ./gradlew build 후 생성된 bootJar만 복사한다.
 FROM eclipse-temurin:21-jre
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg fonts-noto-cjk \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 RUN useradd -r -u 1001 app
 RUN mkdir -p /app/data/shortforms && chown -R app:app /app/data

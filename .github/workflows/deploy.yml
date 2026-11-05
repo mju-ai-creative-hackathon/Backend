@@ -31,6 +31,10 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
+      - name: Install media test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-noto-cjk
       - name: Build & test
         run: ./gradlew build --no-daemon
       - uses: aws-actions/configure-aws-credentials@v4

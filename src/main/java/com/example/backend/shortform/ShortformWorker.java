@@ -22,9 +22,9 @@ public class ShortformWorker {
 
     /** Also callable by deterministic tests without enabling the scheduler. */
     public void runOnce() {
-        if (!ai.isConfigured()) return;
         for (var jobId : state.due()) {
             try {
+                if (!ai.isConfigured(state.provider(jobId))) continue;
                 var claim = state.claim(jobId);
                 if (claim == null) continue;
                 try {
