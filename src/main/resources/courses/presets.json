@@ -102,7 +102,7 @@
         "address": "서울 종로구 청계천로 159",
         "lat": 37.568733,
         "lng": 126.995154,
-        "imageUrl": "",
+        "imageUrl": "https://t1.daumcdn.net/news/202409/02/mk/20240902071201942afwn.jpg",
         "startTime": "11:25",
         "stayMinutes": 40
       },
@@ -179,7 +179,7 @@
         "address": "서울 성동구 왕십리로 63",
         "lat": 37.542926,
         "lng": 127.044631,
-        "imageUrl": "",
+        "imageUrl": "https://csearch-phinf.pstatic.net/20250428_92/1745819716541Cico9_PNG/360_main_thumb_url_1745819716399.png",
         "startTime": "14:05",
         "stayMinutes": 30
       },
@@ -201,7 +201,7 @@
         "address": "서울 성동구 성수이로 78",
         "lat": 37.541825,
         "lng": 127.056459,
-        "imageUrl": "",
+        "imageUrl": "https://postfiles.pstatic.net/MjAyNjEwMjBfMjU2/MDAxNzkyNDg3NDIwNDYw.QaVYDJ9TCINql2Zg-kDBEBjVmDToUJj-B541FwBG9LQg.UQ3VJqRxkGIfsGAKZJ4VKhTSUiqjD2daz-_KFEGYmxgg.JPEG/Jy7pB-hTTI-iruymJ-oh3-loijp4p8LCutYkfAI0g6sGCtv0Bg1PhWeBzJhd8GmHNsNvL2SiDKov.jpg?type=w966",
         "startTime": "16:15",
         "stayMinutes": 50
       }
@@ -245,7 +245,7 @@
         "address": "서울 마포구 어울마당로 65",
         "lat": 37.550989,
         "lng": 126.921068,
-        "imageUrl": "",
+        "imageUrl": "https://image.cine21.com/resize/cine21/article/2022/0124/15_56_44__61ee4daca3c70%5BW680-%5D.jpg",
         "startTime": "15:00",
         "stayMinutes": 40
       },
@@ -315,7 +315,7 @@
         "address": "서울 영등포구 여의대로 108",
         "lat": 37.525964,
         "lng": 126.928418,
-        "imageUrl": "",
+        "imageUrl": "https://t1.daumcdn.net/news/202411/01/mydaily/20241101210252055sgtd.jpg",
         "startTime": "16:15",
         "stayMinutes": 70
       },
@@ -546,7 +546,7 @@
         "address": "서울 종로구 옥인동 수성동계곡",
         "lat": 37.582086,
         "lng": 126.964248,
-        "imageUrl": "",
+        "imageUrl": "https://postfiles.pstatic.net/20150618_49/hurgoun_1434554691671qRn6E_JPEG/6-1.jpg?type=w2",
         "startTime": "14:00",
         "stayMinutes": 30
       },
