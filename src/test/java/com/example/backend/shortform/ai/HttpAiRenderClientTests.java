@@ -259,7 +259,7 @@ class HttpAiRenderClientTests {
     @Test void timesOutEvenWhenTheServerHasAlreadySentResponseHeaders() {
         responseStatus.set(200);
         bodyDelayMs.set(3000);
-        var adapter = client(true, baseUrl, "", 1, false);
+        var adapter = new HttpAiRenderClient(true, baseUrl, "", 1, 1, false, JsonMapper.builder().build());
         assertTimeout(Duration.ofSeconds(2), () -> {
             var error = assertThrows(AiRenderException.class, () -> adapter.submit(submission()));
             assertEquals("AI_UNAVAILABLE", error.getCode());
