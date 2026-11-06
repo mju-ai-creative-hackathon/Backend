@@ -264,14 +264,10 @@ Authorization: Bearer <accessToken>
 - AI 코스는 만든 사람에게만 보인다. 숏폼 프로젝트 생성 시 `courseId`, `missionIds`를 넘기면 촬영 미션이 AI 편집 힌트로 전달된다.
 - 오류: 503 `AI_UNAVAILABLE`, 502 `AI_NO_RESULT`(검증된 장소 부족), 429 `RATE_LIMITED`.
 
-## 배포 (AWS)
+## 배포
 
-`main`에 push하면 GitHub Actions가 빌드·테스트 → ECR 이미지 push → SSM으로 EC2에 배포한다.
+운영 서버는 `https://api.parkserver.xyz`(Proxmox VM)다. 구성과 실행 방법은 `deploy/vm/README.md`를 본다.
 
-- 주소: `https://3-39-47-78.sslip.io` (EC2 Elastic IP `3.39.47.78`, Caddy가 HTTPS 인증서 자동 발급)
-- 리전 `ap-northeast-2`, EC2 `i-0804f2ce498c85ed3`(t3.small, Amazon Linux 2023), ECR `mju-hackathon-backend`
-- EC2 안에서는 `/opt/app`에서 `docker compose -f docker-compose.prod.yml`로 app + PostgreSQL + Caddy가 돈다.
-- 운영 비밀값은 EC2의 `/opt/app/.env`에 있다(Git에 없음). 수정 후 Actions에서 `CI/CD` 워크플로를 다시 실행하면 반영된다.
-- 접속: `aws ssm start-session --target i-0804f2ce498c85ed3` (SSH 포트는 닫혀 있음)
-- Google 로그인 운영 리디렉션 URI: `https://3-39-47-78.sslip.io/login/oauth2/code/google`
-- GitHub Secrets: `AWS_ROLE_ARN`(OIDC 배포 역할), `EC2_INSTANCE_ID`
+- GitHub Actions(`CI`)는 PR과 `main` push에서 빌드·테스트만 한다. 자동 배포는 없다.
+- `main`에 머지한 뒤 VM에서 최신 코드를 받아 `bash deploy/vm/setup.sh`로 다시 띄운다.
+- 예전 AWS(EC2·ECR) 배포는 2026-11-07에 리소스와 함께 없앴다.
